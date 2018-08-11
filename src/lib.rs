@@ -1417,14 +1417,17 @@ impl Kyokumen{
             _ => {},
         }
     }
-    /**
-     * 持ち駒の枚数を加算
-     */
+    /// 持ち駒の枚数を加算。
     pub fn add_mg(&mut self, mg:Koma, maisu:i8){
         self.mg[km_to_num(&mg)] += maisu;
     }
+    /// 持ち駒の枚数をゲット。
     pub fn get_mg(&self, mg:&Koma) -> i8 {
         self.mg[km_to_num(mg)]
+    }
+    /// 持ち駒の枚数をセット。
+    pub fn set_mg(&mut self, km:Koma, maisu:i8){
+        self.mg[km as usize] = maisu;
     }
 
 
