@@ -18,11 +18,9 @@ use std::sync::RwLock;
 // グローバル変数。
 lazy_static! {
     // 初期局面。
-    #[allow(dead_code)]
-    static ref INI_POSITION_WRAP: RwLock<Kyokumen> = RwLock::new(Kyokumen::new());
+    pub static ref INI_POSITION_WRAP: RwLock<Kyokumen> = RwLock::new(Kyokumen::new());
 
     // 計算中の局面。
-    #[allow(dead_code)]
     pub static ref CUR_POSITION_WRAP: RwLock<Kyokumen> = RwLock::new(Kyokumen::new());
 }
 
