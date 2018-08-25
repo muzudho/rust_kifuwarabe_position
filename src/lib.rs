@@ -1298,11 +1298,9 @@ pub fn sn_kms_to_km(sn:&Sengo, kms:&KmSyurui)->Koma{
 
 
 
-/**
- * 局面ハッシュ種
- * ゾブリストハッシュを使って、局面の一致判定をするのに使う☆（＾～＾）
- */
-pub struct KyHashSeed {
+/// 局面ハッシュ種
+/// ゾブリストハッシュを使って、局面の一致判定をするのに使う☆（＾～＾）
+pub struct PositionHashSeed {
     // 盤上の駒
     pub km : [[u64;KM_LN];BAN_SIZE],
     // 持ち駒
@@ -1310,6 +1308,27 @@ pub struct KyHashSeed {
     // 先後
     pub sn : [u64;SN_LN],
 }
+impl PositionHashSeed {
+    #[allow(dead_code)]
+    fn clone(&self) -> PositionHashSeed {
+        let km: [[u64;KM_LN];BAN_SIZE] = self.km;
+        let mg: [[u64;MG_MAX];KM_LN] = self.mg;
+        let sn: [u64;SN_LN] = self.sn;
+
+        PositionHashSeed {
+            km: km,
+            mg: mg,
+            sn: sn,
+        }
+    }
+    #[allow(dead_code)]
+    fn set_all(&mut self, source: &PositionHashSeed) {
+        self.km = source.km;
+        self.mg = source.mg;
+        self.sn = source.sn;
+    }
+}
+
 
 // 局面
 pub struct Position{
@@ -1486,7 +1505,7 @@ impl Position{
     /**
      * 局面ハッシュを作り直す
      */
-    pub fn create_hash(&self, ky_hash_seed: &KyHashSeed) -> u64 {
+    pub fn create_hash(&self, ky_hash_seed: &PositionHashSeed) -> u64 {
 
         let mut hash : u64 = 0;
 
