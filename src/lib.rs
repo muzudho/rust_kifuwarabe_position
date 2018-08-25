@@ -1310,7 +1310,7 @@ pub struct PositionHashSeed {
 }
 impl PositionHashSeed {
     #[allow(dead_code)]
-    fn clone(&self) -> PositionHashSeed {
+    pub fn clone(&self) -> PositionHashSeed {
         let km: [[u64;KM_LN];BAN_SIZE] = self.km;
         let mg: [[u64;MG_MAX];KM_LN] = self.mg;
         let sn: [u64;SN_LN] = self.sn;
@@ -1322,7 +1322,7 @@ impl PositionHashSeed {
         }
     }
     #[allow(dead_code)]
-    fn set_all(&mut self, source: &PositionHashSeed) {
+    pub fn set_all(&mut self, source: &PositionHashSeed) {
         self.km = source.km;
         self.mg = source.mg;
         self.sn = source.sn;
