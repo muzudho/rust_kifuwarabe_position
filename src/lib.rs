@@ -1358,11 +1358,11 @@ impl Position{
                 ms_r:[0,0,0],
             }
     }
-    pub fn import(source: &Position)->Position{
+    pub fn clone(&self) -> Position {
         // 配列のコピーを作る。
-        let ban : [Koma; BAN_SIZE] = source.ban;
-        let mg : [i8; KM_LN] = source.mg;
-        let ms_r : [umasu; SN_LN] = source.ms_r;
+        let ban : [Koma; BAN_SIZE] = self.ban;
+        let mg : [i8; KM_LN] = self.mg;
+        let ms_r : [umasu; SN_LN] = self.ms_r;
 
         Position{
             ban: ban,
