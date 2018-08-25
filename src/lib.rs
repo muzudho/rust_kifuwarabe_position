@@ -7,23 +7,8 @@
  * プログラム上に違いは無いが、ソースコードを読むときは　後手（上手）から
  * 盤を想像すること☆（＾～＾）！
  */
-#[macro_use]
-extern crate lazy_static;
-
 use std::*;
 use std::collections::*;
-use std::sync::RwLock;
-
-
-// グローバル変数。
-lazy_static! {
-    // 初期局面。
-    pub static ref INI_POSITION_WRAP: RwLock<Kyokumen> = RwLock::new(Kyokumen::new());
-
-    // 計算中の局面。
-    pub static ref CUR_POSITION_WRAP: RwLock<Kyokumen> = RwLock::new(Kyokumen::new());
-}
-
 
 
 
@@ -1327,7 +1312,7 @@ pub struct KyHashSeed {
 }
 
 // 局面
-pub struct Kyokumen{
+pub struct Position{
     /**
      * 10の位を筋、1の位を段とする。
      * 0筋、0段は未使用
@@ -1344,10 +1329,10 @@ pub struct Kyokumen{
      */
     pub ms_r : [umasu; SN_LN]
 }
-impl Kyokumen{
-    pub fn new()->Kyokumen{
+impl Position{
+    pub fn new()->Position{
         use Koma::*;
-         Kyokumen{
+         Position{
                 // 盤上
                 ban:[
                     Kara,Kara,Kara,Kara,Kara,Kara,Kara,Kara,Kara,Kara,
@@ -1372,6 +1357,18 @@ impl Kyokumen{
                 ],
                 ms_r:[0,0,0],
             }
+    }
+    pub fn import(source: &Position)->Position{
+        // 配列のコピーを作る。
+        let ban : [Koma; BAN_SIZE] = source.ban;
+        let mg : [i8; KM_LN] = source.mg;
+        let ms_r : [umasu; SN_LN] = source.ms_r;
+
+        Position{
+            ban: ban,
+            mg: mg,
+            ms_r: ms_r,
+        }
     }
     pub fn clear(&mut self){
         use Koma::Kara;
