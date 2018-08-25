@@ -1370,6 +1370,12 @@ impl Position{
             ms_r: ms_r,
         }
     }
+    pub fn set_all(&mut self, source: &Position) {
+        // 配列のコピーを作る。
+        self.ban = source.ban;
+        self.mg = source.mg;
+        self.ms_r = source.ms_r;
+    }
     pub fn clear(&mut self){
         use Koma::Kara;
         self.ban = [
