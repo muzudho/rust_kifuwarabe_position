@@ -22,7 +22,7 @@ pub const SN_LN : usize = 3;
  * 先後。単純にプレイヤー１を先手、プレイヤー２を後手とする。
  * 駒落ち戦での通称　上手／下手　の場合、上手は先手、下手は後手とする。
  */
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum Sengo{
     Sen,
     Go,
@@ -45,12 +45,6 @@ impl fmt::Display for Sengo{
         }
     }
 }
-/**
- * 先後の一致比較
- */
-pub fn match_sn(a:&Sengo, b:&Sengo)->bool{
-    sn_to_num(a) == sn_to_num(b)
-}
 
 pub const SN_ARRAY_LN : usize = 2;
 pub const SN_ARRAY : [Sengo;SN_ARRAY_LN] = [
@@ -69,7 +63,7 @@ pub const JIAI_LN : usize = 3;
  * 先後。単純にプレイヤー１を先手、プレイヤー２を後手とする。
  * 駒落ち戦での通称　上手／下手　の場合、上手は先手、下手は後手とする。
  */
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum Jiai{
     Ji,
     Ai,
@@ -89,12 +83,6 @@ impl fmt::Display for Jiai {
             Owari => { write!(f,"×")},
         }
     }
-}
-/**
- * 一致比較
- */
-pub fn match_jiai(a:&Jiai, b:&Jiai)->bool{
-    jiai_to_num(a) == jiai_to_num(b)
 }
 
 #[allow(dead_code)]
@@ -237,7 +225,7 @@ pub const SS_SRC_DA : umasu = 0;
 pub const MG_MAX : usize = 18;
 pub const KM_LN : usize = 30;
 /// 先後付きの駒と空白
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum Koma{
     // ▼らいおん
     R0,
@@ -337,12 +325,6 @@ impl fmt::Display for Koma{
             Owari => { write!(f,"××")},
         }
     }
-}
-/**
- * 駒の一致比較
- */
-pub fn match_km(a:&Koma, b:&Koma)->bool{
-    km_to_num(a) == km_to_num(b)
 }
 
 #[allow(dead_code)]
@@ -446,7 +428,7 @@ pub const KMS_LN : usize = 16;
 // 駒の動ける方向数、終端子込み
 pub const KM_UGOKI_LN : usize = 9;
 // 先後なしの駒と空白
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum KmSyurui{
     // らいおん
     R,
@@ -504,12 +486,6 @@ impl fmt::Display for KmSyurui{
             Owari => { write!(f,"×")},
         }
     }
-}
-/**
- * 駒種類の一致比較
- */
-pub fn match_kms(a:&KmSyurui, b:&KmSyurui)->bool{
-    kms_to_num(a) == kms_to_num(b)
 }
 
 // 駒種類数
@@ -1426,7 +1402,7 @@ impl Position{
             let ms = suji_dan_to_ms( suji, dan );
             let km = self.get_km_by_ms( ms );
             let (sn_km,kms) = km_to_sn_kms( &km );
-            if match_sn( &sn_km, sn ) && match_kms( &kms, &KmSyurui::H ) {
+            if sn_km == *sn && kms == KmSyurui::H {
                 return true;
             }
         }
@@ -1468,14 +1444,14 @@ impl Position{
      * 指定の升に駒があれば真
      */
     pub fn exists_km( &self, ms:umasu)->bool{
-        !match_km( &self.get_km_by_ms(ms), &Koma::Kara)
+        self.get_km_by_ms(ms) != Koma::Kara
     }    
 
     /**
      * 指定の升に指定の駒があれば真
      */
     pub fn has_ms_km( &self, ms:umasu, km:&Koma)->bool{
-        match_km( &self.get_km_by_ms(ms), km)
+        self.get_km_by_ms(ms) == *km
     }    
 
     /**

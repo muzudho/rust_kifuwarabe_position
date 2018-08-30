@@ -20,4 +20,9 @@ fn main() {
 
     println!("pos0ms55: {}, pos1ms55: {}, pos2ms55: {}", position0.get_km_by_ms(55), position1.get_km_by_ms(55), position2.get_km_by_ms(55));
 
+    println!("pos0ms55: Sengo::Sen == Sengo::Sen: {}.", &Sengo::Sen == &Sengo::Sen);
+    println!("pos0ms55: Sengo::Sen == Sengo::Go: {}.", &Sengo::Sen == &Sengo::Go);
+    println!("pos0ms55: Sengo::Go == Sengo::Sen: {}.", &Sengo::Go == &Sengo::Sen);
+    println!("pos0ms55: Sengo::Go == Sengo::Go: {}.", &Sengo::Go == &Sengo::Go);
+
 }
