@@ -534,16 +534,15 @@ impl KmsSyugo {
      */
     pub fn new_all() -> KmsSyugo {
         let mut num_syugo1 : HashSet<usize> = HashSet::new();
-        for kms in KMS_ARRAY.iter() {
+        for kms in &KMS_ARRAY {
             num_syugo1.insert( *kms as usize );
         }
-        let kms_syugo = KmsSyugo {
+        KmsSyugo {
             num_syugo : num_syugo1,
-        };
-        kms_syugo
+        }
     }
-    pub fn remove( &mut self, kms:&KmSyurui ) {
-        self.num_syugo.remove( &(*kms as usize) );
+    pub fn remove( &mut self, kms:KmSyurui ) {
+        self.num_syugo.remove( &(kms as usize) );
     }
 }
 
@@ -565,9 +564,9 @@ impl KmsSyugo {
 /********
  * 先後 *
  ********/
-pub fn hanten_sn(sn:&Sengo)->Sengo{
+pub fn hanten_sn(sn:Sengo)->Sengo{
     use Sengo::*;
-    match *sn {
+    match sn {
         Sen   => Go,
         Go    => Sen,
         Num => Num,
@@ -578,9 +577,9 @@ pub fn hanten_sn(sn:&Sengo)->Sengo{
  * 自分相手 *
  ************/
 #[allow(dead_code)]
-pub fn hanten_jiai(jiai:&Jiai)->Jiai{
+pub fn hanten_jiai(jiai:Jiai)->Jiai{
     use Jiai::*;
-    match *jiai {
+    match jiai {
         Ji    => Ai,
         Ai    => Ji,
         Num => Num,
@@ -629,7 +628,7 @@ pub fn push_ms_to_hash(hash:u64, ms:umasu) -> u64 {
 pub fn pop_ms_from_hash(hash:u64) -> (u64, umasu) {
     // 0筋とか 0段とか 使ってないが、そのまま足す。
     // 0～100の101升と、ちょいなんで、128(=2^7) あれば十分
-    let ms_num =(hash & 0b1111111)as umasu;
+    let ms_num =(hash & 0b111_1111)as umasu;
     (hash>>7, ms_num)
 }
 
@@ -653,9 +652,9 @@ pub fn num_to_lower_case(num:i8)->&'static str{
 /****************************************************
  * 先手であれば、後手のように番号を振った座標に変換 *
  ****************************************************/
-pub fn kaiten180_ms_by_ms_sn(ms:umasu, sn:&Sengo) -> umasu {
+pub fn kaiten180_ms_by_ms_sn(ms:umasu, sn:Sengo) -> umasu {
     use Sengo::*;
-    match *sn {
+    match sn {
         Sen   => {
             BAN_MAX - ms + BAN_MIN
         },
@@ -705,9 +704,9 @@ pub fn num_to_km(km_num:usize) -> Koma{
     }
 }
 /// ハッシュ値を作る
-pub fn push_km_to_hash(hash:u64, km:&Koma) -> u64 {
+pub fn push_km_to_hash(hash:u64, km:Koma) -> u64 {
     // 使ってるのは30駒番号ぐらいなんで、32(=2^5) あれば十分
-    (hash<<5) + (*km as usize) as u64
+    (hash<<5) + (km as usize) as u64
 }
 /// ハッシュ値から作る
 pub fn pop_km_from_hash(hash:u64) -> (u64,Koma) {
@@ -716,9 +715,9 @@ pub fn pop_km_from_hash(hash:u64) -> (u64,Koma) {
     (hash>>5, km_num)
 }
 /// 駒→成駒　（成れない駒は、そのまま）
-pub fn km_to_prokm(km:&Koma) -> Koma{
+pub fn km_to_prokm(km:Koma) -> Koma{
     use Koma::*;
-    match *km {
+    match km {
         R0 =>R0,
         K0 =>PK0,
         Z0 =>PZ0,
@@ -752,9 +751,9 @@ pub fn km_to_prokm(km:&Koma) -> Koma{
     }
 }
 /// 成駒→駒
-pub fn prokm_to_km(km:&Koma) -> Koma{
+pub fn prokm_to_km(km:Koma) -> Koma{
     use Koma::*;
-    match *km {
+    match km {
         R0 =>R0,
         K0 =>K0,
         Z0 =>Z0,
@@ -788,17 +787,17 @@ pub fn prokm_to_km(km:&Koma) -> Koma{
     }
 }
 /// 駒→長い利きの有無
-pub fn km_is_nagaikiki(km:&Koma) -> bool{
-    kms_is_nagaikiki( &km_to_kms( km ) )
+pub fn km_is_nagaikiki(km:Koma) -> bool{
+    kms_is_nagaikiki( km_to_kms( km ) )
 }
 /// 先後付き駒→駒種類
-pub fn km_to_sn_kms(km:&Koma)->(Sengo,KmSyurui){
+pub fn km_to_sn_kms(km:Koma)->(Sengo,KmSyurui){
     use Koma;
     use Koma::*;
     use Sengo::*;
     use KmSyurui;
     use KmSyurui::*;
-    match *km{
+    match km{
         R0  => { (Sen,R ) },
         K0  => { (Sen,K ) },
         Z0  => { (Sen,Z ) },
@@ -833,10 +832,10 @@ pub fn km_to_sn_kms(km:&Koma)->(Sengo,KmSyurui){
 }
 /// 先後付き駒　を　先後　へ変換。
 #[allow(dead_code)]
-pub fn km_to_sn(km:&Koma)->Sengo{
+pub fn km_to_sn(km:Koma)->Sengo{
     use Koma::*;
     use Sengo::*;
-    match *km{
+    match km{
         R0 => { Sen},
         K0 => { Sen},
         Z0 => { Sen},
@@ -870,12 +869,12 @@ pub fn km_to_sn(km:&Koma)->Sengo{
     }
 }
 /// 先後付き駒→駒種類
-pub fn km_to_kms(km:&Koma)->KmSyurui{
+pub fn km_to_kms(km:Koma)->KmSyurui{
     use Koma;
     use Koma::*;
     use KmSyurui;
     use KmSyurui::*;
-    match *km{
+    match km{
         R0 => { R},
         K0 => { K},
         Z0 => { Z},
@@ -976,9 +975,9 @@ pub fn num_to_kms(n:usize) -> KmSyurui {
 /**
  * ハッシュ値を作る
  */
-pub fn push_kms_to_hash(hash:u64, kms:&KmSyurui) -> u64 {
+pub fn push_kms_to_hash(hash:u64, kms:KmSyurui) -> u64 {
     // 使ってるのは16駒種類番号ぐらいなんで、16(=2^4) あれば十分
-    (hash<<4) + (*kms as usize) as u64
+    (hash<<4) + (kms as usize) as u64
 }
 /**
  * ハッシュ値から作る
@@ -989,9 +988,9 @@ pub fn pop_kms_from_hash(hash:u64) -> (u64,KmSyurui) {
     (hash>>4, kms_num)
 }
 // 駒種類→｛　成駒,（不成駒、それ以外）　｝
-pub fn kms_is_pro(kms:&KmSyurui) -> bool{
+pub fn kms_is_pro(kms:KmSyurui) -> bool{
     use KmSyurui::*;
-    match *kms {
+    match kms {
         R=>false,
         K=>false,
         Z=>false,
@@ -1011,9 +1010,9 @@ pub fn kms_is_pro(kms:&KmSyurui) -> bool{
     }
 }
 // 成り駒種類→成る前の駒種類。成り駒でなければ、空に戻る。
-pub fn prokms_to_kms(kms:&KmSyurui) -> KmSyurui {
+pub fn prokms_to_kms(kms:KmSyurui) -> KmSyurui {
     use KmSyurui::*;
-    match *kms {
+    match kms {
         R=>Kara,
         K=>Kara,
         Z=>Kara,
@@ -1036,9 +1035,9 @@ pub fn prokms_to_kms(kms:&KmSyurui) -> KmSyurui {
  * 駒種類→｛　長い利きの駒か否か　｝
  * 合い駒で防ぎえる可能性があれば真
  */
-pub fn kms_is_nagaikiki(kms:&KmSyurui) -> bool {
+pub fn kms_is_nagaikiki(kms:KmSyurui) -> bool {
     use KmSyurui::*;
-    match *kms {
+    match kms {
         R=>false,
         K=>true,
         Z=>true,
@@ -1060,9 +1059,9 @@ pub fn kms_is_nagaikiki(kms:&KmSyurui) -> bool {
 /**
  * 成れる駒
  */
-pub fn kms_can_pro(kms:&KmSyurui) -> bool {
+pub fn kms_can_pro(kms:KmSyurui) -> bool {
     use KmSyurui::*;
-    match *kms {
+    match kms {
         R=>false,
         K=>true,
         Z=>true,
@@ -1084,9 +1083,9 @@ pub fn kms_can_pro(kms:&KmSyurui) -> bool {
 /**
  * 打てる駒
  */
-pub fn kms_can_da(kms:&KmSyurui) -> bool {
+pub fn kms_can_da(kms:KmSyurui) -> bool {
     use KmSyurui::*;
-    match *kms {
+    match kms {
         R=>false,
         K=>true,
         Z=>true,
@@ -1106,12 +1105,12 @@ pub fn kms_can_da(kms:&KmSyurui) -> bool {
     }
 }
 // 先後＆駒種類→先後付き駒
-pub fn sn_kms_to_km(sn:&Sengo, kms:&KmSyurui)->Koma{
+pub fn sn_kms_to_km(sn:Sengo, kms:KmSyurui)->Koma{
     use KmSyurui;
     use Koma;
-    match *sn{
+    match sn{
         Sengo::Sen=>
-            match *kms{
+            match kms{
                 KmSyurui::R => Koma::R0,
                 KmSyurui::K => Koma::K0,
                 KmSyurui::Z => Koma::Z0,
@@ -1130,7 +1129,7 @@ pub fn sn_kms_to_km(sn:&Sengo, kms:&KmSyurui)->Koma{
             }
         ,
         Sengo::Go=>
-            match *kms{
+            match kms{
                 KmSyurui::R => Koma::R1,
                 KmSyurui::K => Koma::K1,
                 KmSyurui::Z => Koma::Z1,
@@ -1173,6 +1172,7 @@ pub fn sn_kms_to_km(sn:&Sengo, kms:&KmSyurui)->Koma{
 
 /// 局面ハッシュ種
 /// ゾブリストハッシュを使って、局面の一致判定をするのに使う☆（＾～＾）
+#[derive(Copy)]
 pub struct PositionHashSeed {
     // 盤上の駒
     pub km : [[u64; Koma::Num as usize];BAN_SIZE],
@@ -1181,19 +1181,21 @@ pub struct PositionHashSeed {
     // 先後
     pub sn : [u64; Sengo::Num as usize],
 }
-impl PositionHashSeed {
+impl Clone for PositionHashSeed {
     #[allow(dead_code)]
-    pub fn clone(&self) -> PositionHashSeed {
-        let km: [[u64; Koma::Num as usize];BAN_SIZE] = self.km;
-        let mg: [[u64;MG_MAX]; Koma::Num as usize] = self.mg;
-        let sn: [u64; Sengo::Num as usize] = self.sn;
+    fn clone(&self) -> PositionHashSeed {
+        let km2: [[u64; Koma::Num as usize];BAN_SIZE] = self.km;
+        let mg2: [[u64;MG_MAX]; Koma::Num as usize] = self.mg;
+        let sn2: [u64; Sengo::Num as usize] = self.sn;
 
         PositionHashSeed {
-            km: km,
-            mg: mg,
-            sn: sn,
+            km: km2,
+            mg: mg2,
+            sn: sn2,
         }
     }
+}
+impl PositionHashSeed {
     #[allow(dead_code)]
     pub fn set_all(&mut self, source: &PositionHashSeed) {
         self.km = source.km;
@@ -1204,6 +1206,7 @@ impl PositionHashSeed {
 
 
 // 局面
+#[derive(Copy)]
 pub struct Position{
     /**
      * 10の位を筋、1の位を段とする。
@@ -1221,8 +1224,23 @@ pub struct Position{
      */
     pub ms_r : [umasu; Sengo::Num as usize]
 }
+impl Clone for Position {
+    // fn clone(&self) -> Position { *self }
+    fn clone(&self) -> Position {
+        // 配列のコピーを作る。
+        let ban2 : [Koma; BAN_SIZE] = self.ban;
+        let mg2 : [i8; Koma::Num as usize] = self.mg;
+        let ms_r2 : [umasu; Sengo::Num as usize] = self.ms_r;
+
+        Position{
+            ban: ban2,
+            mg: mg2,
+            ms_r: ms_r2,
+        }
+    }
+}
 impl Position{
-    pub fn new()->Position{
+    pub fn default()->Position{
         use Koma::*;
          Position{
                 // 盤上
@@ -1249,18 +1267,6 @@ impl Position{
                 ],
                 ms_r:[0,0],
             }
-    }
-    pub fn clone(&self) -> Position {
-        // 配列のコピーを作る。
-        let ban : [Koma; BAN_SIZE] = self.ban;
-        let mg : [i8; Koma::Num as usize] = self.mg;
-        let ms_r : [umasu; Sengo::Num as usize] = self.ms_r;
-
-        Position{
-            ban: ban,
-            mg: mg,
-            ms_r: ms_r,
-        }
     }
     pub fn set_all(&mut self, source: &Position) {
         // 配列のコピーを作る。
@@ -1294,12 +1300,12 @@ impl Position{
     /**
      * 歩が置いてあるか確認
      */
-    pub fn exists_fu_by_sn_suji( &self, sn:&Sengo, suji:i8 ) -> bool {
+    pub fn exists_fu_by_sn_suji( &self, sn:Sengo, suji:i8 ) -> bool {
         for dan in DAN_1..DAN_10 {
             let ms = suji_dan_to_ms( suji, dan );
             let km = self.get_km_by_ms( ms );
-            let (sn_km,kms) = km_to_sn_kms( &km );
-            if sn_km == *sn && kms == KmSyurui::H {
+            let (sn_km,kms) = km_to_sn_kms( km );
+            if sn_km == sn && kms == KmSyurui::H {
                 return true;
             }
         }
@@ -1328,8 +1334,8 @@ impl Position{
         self.mg[mg as usize] += maisu;
     }
     /// 持ち駒の枚数をゲット。
-    pub fn get_mg(&self, mg:&Koma) -> i8 {
-        self.mg[*mg as usize]
+    pub fn get_mg(&self, mg:Koma) -> i8 {
+        self.mg[mg as usize]
     }
     /// 持ち駒の枚数をセット。
     pub fn set_mg(&mut self, km:Koma, maisu:i8){
@@ -1347,15 +1353,15 @@ impl Position{
     /**
      * 指定の升に指定の駒があれば真
      */
-    pub fn has_ms_km( &self, ms:umasu, km:&Koma)->bool{
-        self.get_km_by_ms(ms) == *km
+    pub fn has_ms_km( &self, ms:umasu, km:Koma)->bool{
+        self.get_km_by_ms(ms) == km
     }    
 
     /**
      * 指定の升にある駒の先後、または空升
      */
     pub fn get_sn_by_ms( &self, ms:umasu)->Sengo{
-        km_to_sn( &self.get_km_by_ms(ms))
+        km_to_sn(self.get_km_by_ms(ms))
     }
 
     /**
@@ -1364,12 +1370,12 @@ impl Position{
     #[allow(dead_code)]
     pub fn is_natta( &self, ms_src:umasu, ms_dst:umasu )->bool{
         let km_src = &self.get_km_by_ms(ms_src);
-        let kms_src = km_to_kms(&km_src);
+        let kms_src = km_to_kms(*km_src);
         let km_dst = &self.get_km_by_ms(ms_dst);
-        let kms_dst = km_to_kms(&km_dst);
+        let kms_dst = km_to_kms(*km_dst);
         // 移動先の駒が成り駒で、 移動元の駒が不成駒なら、成る
-        let pro_dst = kms_is_pro(&kms_dst);
-        let pro_src = kms_is_pro(&kms_src);
+        let pro_dst = kms_is_pro(kms_dst);
+        let pro_src = kms_is_pro(kms_src);
 
         // 成り
         pro_dst && !pro_src
@@ -1390,11 +1396,11 @@ impl Position{
         }
 
         // 持ち駒ハッシュ
-        for i_km in 0..KM_ARRAY_LN {
-            let km = KM_ARRAY[i_km];
-            let num_km = km as usize;
+        for km in KM_ARRAY.iter().take(KM_ARRAY_LN) { // for i_km in 0..KM_ARRAY_LN {
+            // let km = KM_ARRAY[i_km];
+            let num_km = *km as usize;
 
-            let maisu = self.get_mg(&km);
+            let maisu = self.get_mg(*km);
             debug_assert!( -1<maisu && maisu <= MG_MAX as i8,
                 "持ち駒 {} の枚数 {} <= {}", km, maisu, MG_MAX
             );

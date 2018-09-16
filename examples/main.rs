@@ -1,9 +1,13 @@
+/// ```
+/// ### 以下のコマンドで実行。 
+/// cargo run --example main
+/// ```
 extern crate kifuwarabe_position;
 use kifuwarabe_position::*;
 
 fn main() {
 
-    let mut position0 = Position::new();
+    let mut position0 = Position::default();
 
     position0.set_km_by_ms(55, Koma::Z0);
 
@@ -15,7 +19,7 @@ fn main() {
 
     println!("pos0ms55: {}, pos1ms55: {}", position0.get_km_by_ms(55), position1.get_km_by_ms(55));
 
-    let mut position2 = Position::new();
+    let mut position2 = Position::default();
     position2.set_all(&position0);
 
     println!("pos0ms55: {}, pos1ms55: {}, pos2ms55: {}", position0.get_km_by_ms(55), position1.get_km_by_ms(55), position2.get_km_by_ms(55));
